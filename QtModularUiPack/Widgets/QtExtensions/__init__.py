@@ -1,0 +1,4 @@
+from Widgets.QtExtensions.QDoubleRangeSlider import QDoubleRangeSlider
+from Widgets.QtExtensions.QDoubleSlider import QDoubleSlider
+from Widgets.QtExtensions.QJumpSlider import QJumpSlider
+from Widgets.QtExtensions.QRangeSlider import QRangeSlider
