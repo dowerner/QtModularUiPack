@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QFrame, QSplitter, QVBoxLayout, QGridLayout, QScrollArea, QGroupBox, QLabel, QPushButton, QCheckBox
+from PyQt5.QtWidgets import QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea, QGroupBox, QLabel, QPushButton, QCheckBox
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar

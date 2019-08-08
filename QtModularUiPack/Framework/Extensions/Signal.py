@@ -7,12 +7,17 @@ class Signal(object):
         self._types = types
         self._callbacks = list()
 
+    def __del__(self):
+        self._types = list()
+        self._callbacks = list()
+
     def connect(self, callback):
         """
         Connect callback function to signal
         :param callback: callback function to execute on signal
         """
-        self._callbacks.append(callback)
+        if callback not in self._callbacks:
+            self._callbacks.append(callback)
 
     def disconnect(self, callback):
         """
@@ -32,7 +37,7 @@ class Signal(object):
 
         for i in range(len(args)):
             t = self._types[i]
-            if not isinstance(args[i], t):
+            if args[i] is not None and not isinstance(args[i], t):
                 raise TypeError('Argument {} has the type "{}" but "{}" was expected.'.format(i, type(args[i]), t))
 
         for callback in self._callbacks:

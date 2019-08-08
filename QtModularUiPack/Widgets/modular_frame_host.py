@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QSplitter, QStackedWidget, QFrame
 from PyQt5.QtCore import Qt, pyqtSignal
-from Widgets import ModularFrame
-from ViewModels import BaseViewModel
-from Framework import ModuleManager
+from QtModularUiPack.Widgets import ModularFrame
+from QtModularUiPack.ViewModels import BaseViewModel
+from QtModularUiPack.Framework import ModuleManager
 import json
 import os
 
@@ -15,9 +15,36 @@ class ModularFrameHost(QStackedWidget):
     data_context_received = pyqtSignal(BaseViewModel)
     data_context_removed = pyqtSignal(BaseViewModel)
 
-    def __init__(self, parent, *args, **kwargs):
+    @property
+    def frame_search_path(self):
+        """
+        Gets the path where the host looks for tool frames which can be displayed
+        :return: path
+        """
+        return self._frame_search_path
+
+    @frame_search_path.setter
+    def frame_search_path(self, value):
+        """
+        Sets the path where the host looks for tool frames which can eb displayed
+        :param value: path
+        """
+        self._frame_search_path = value
+        for frame in self._modular_frames:
+            frame.frame_search_path = value
+
+    @property
+    def is_restoring(self):
+        """
+        True if the host is currently restoring frames
+        """
+        return self._is_restoring
+
+    def __init__(self, parent, frame_search_path=None, *args, **kwargs):
         super(ModularFrameHost, self).__init__(parent, *args, **kwargs)
+        self._frame_search_path = frame_search_path
         self._base_splitter = None
+        self._is_restoring = False
         self._setup_frame_host_()
 
     def save(self, path):
@@ -38,6 +65,7 @@ class ModularFrameHost(QStackedWidget):
         if not os.path.isfile(path):    # do noting if the given file does not exist
             return
 
+        self._is_restoring = True
         with open(path, 'r') as file:
             data = json.loads(file.read())  # retrieve dictionary representing the frame hierarchy from json file
 
@@ -45,6 +73,7 @@ class ModularFrameHost(QStackedWidget):
             self._modular_frames.clear()    # remove initial frame from list
             self._base_splitter.deleteLater()   # delete initial splitter
             self._restore_frames_recursive_(data, self)     # restore the widget state based on the loaded data
+        self._is_restoring = False
 
     def reload_possible_frames(self):
         """
@@ -180,9 +209,18 @@ class ModularFrameHost(QStackedWidget):
         If no frames would be left the frame host becomes unusable.
         :param frame: the calling frame
         """
+
         if len(self._modular_frames) > 1:   # only allow this action if there are more than one frame present
             # check if after the frame removal only one widget will be left in the splitter
             # If true, remove the splitter and reattach the remaining widget in the parent splitter (prohibit nearly empty splitters from filling up the hierarchy)
+
+            # disconnect signals
+            frame.on_split_horizontal.disconnect(self._on_split_horizontal_)
+            frame.on_split_vertical.disconnect(self._on_split_vertical_)
+            frame.on_remove.disconnect(self._on_remove_)
+            frame.received_data_context.disconnect(self._on_data_context_received_)
+            frame.data_context_removed.disconnect(self._on_data_context_removed_)
+
             if frame.splitter is not None and frame.splitter.count() == 2:
                 last_widget = frame.splitter.widget(0) if frame.splitter.widget(1) == frame else frame.splitter.widget(1)    # find last remaining widget
                 parent = frame.splitter.parent()    # find the parent splitter
@@ -205,8 +243,8 @@ class ModularFrameHost(QStackedWidget):
             frame.deleteLater()     # remove the frame
             self._modular_frames.remove(frame)  # remove the frame from the list of frames
 
-    def _on_data_context_received_(self, tool_frame, data_context):
-        self.data_context_received.emit(tool_frame, data_context)
+    def _on_data_context_received_(self, data_context):
+        self.data_context_received.emit(data_context)
 
     def _on_data_context_removed_(self, data_context):
         self.data_context_removed.emit(data_context)
@@ -216,7 +254,7 @@ class ModularFrameHost(QStackedWidget):
         Add a new frame.
         :return: New frame that has been setup to work with the proper event handling.
         """
-        frame = ModularFrame(self)  # new frame
+        frame = ModularFrame(self, frame_search_path=self.frame_search_path)  # new frame
         frame.setFrameShape(QFrame.StyledPanel)     # add borders
         frame.on_split_horizontal.connect(self._on_split_horizontal_)    # listen for horizontal split requests
         frame.on_split_vertical.connect(self._on_split_vertical_)    # listen for vertical split requests

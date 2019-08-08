@@ -1,3 +1,6 @@
+from Framework import Signal
+
+
 class BaseViewModel(object):
     """
     This is the base view model class to be implemented by all data context classes
@@ -5,13 +8,14 @@ class BaseViewModel(object):
 
     name = 'data_context'
 
+    property_changed = Signal(str)
+
     def __init__(self):
-        self.property_changed = list()
+        pass
 
     def notify_change(self, name):
         """
         Send notification that a variable has been changed that the binding enabled widgets can update accordingly
         :param name: variable name
         """
-        for callback in self.property_changed:
-            callback(name)
+        self.property_changed.emit(name)

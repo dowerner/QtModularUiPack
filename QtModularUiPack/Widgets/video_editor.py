@@ -1,8 +1,8 @@
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QSizePolicy, QLabel, QStyle, QPushButton, QSpinBox
 from PyQt5.QtCore import Qt, QPoint, QSize, QRect, QEvent, QUrl, pyqtSignal
-from Widgets.VideoExtensions import ImageRenderWidget, ImageLayer, ImageRectangle, VideoFrameGrabber
-from Widgets.QtExtensions import QJumpSlider
+from QtModularUiPack.Widgets.VideoExtensions import ImageRenderWidget, ImageLayer, ImageRectangle, VideoFrameGrabber
+from QtModularUiPack.Widgets.QtExtensions import QJumpSlider
 from time import sleep
 import numpy as np
 

@@ -1,4 +1,4 @@
-from Framework.Extensions import Singleton
+from QtModularUiPack.Framework.Extensions import Singleton
 import importlib
 import os
 import sys

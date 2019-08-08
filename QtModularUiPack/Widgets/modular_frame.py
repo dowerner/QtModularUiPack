@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import QFrame, QAction, QHBoxLayout, QMenuBar
 from PyQt5.QtCore import pyqtSignal
-from Widgets import EmptyFrame
-from ViewModels import BaseViewModel
-from Framework import ModuleManager
+from QtModularUiPack.Widgets import EmptyFrame
+from QtModularUiPack.Widgets.utils import get_builtin_frames
+from QtModularUiPack.ViewModels import BaseViewModel
+from QtModularUiPack.Framework import ModuleManager
 import os
 import traceback
 
@@ -21,7 +22,7 @@ class ModularFrame(QFrame):
     on_split_horizontal = pyqtSignal(QFrame)
     on_split_vertical = pyqtSignal(QFrame)
     on_remove = pyqtSignal(QFrame)
-    received_data_context = pyqtSignal(EmptyFrame, BaseViewModel)
+    received_data_context = pyqtSignal(BaseViewModel)
     data_context_removed = pyqtSignal(BaseViewModel)
 
     @property
@@ -50,14 +51,23 @@ class ModularFrame(QFrame):
             traceback.print_exc()
             self._name = None
 
-    def __init__(self, parent, splitter=None, name='empty frame', *args, **kwargs):
+    def __init__(self, parent, splitter=None, name='empty frame', frame_search_path=None, *args, **kwargs):
         super(ModularFrame, self).__init__(parent, *args, **kwargs)
+        self.frame_search_path = frame_search_path
         self.splitter = splitter
         self._valid_frame_types = dict()
         self._setup_()
         self._name = None
         self.loaded_tool_frame = None
         self.name = name
+
+    def destroyed(self, p_object=None):
+        super().destroyed(p_object)
+
+    def deleteLater(self):
+        if self.loaded_tool_frame is not None and 'data_context_changed' in dir(self.loaded_tool_frame):
+            self.loaded_tool_frame.data_context_changed.disconnect(self._on_data_context_changed_)
+        super().deleteLater()
 
     def resizeEvent(self, *args, **kwargs):
         """
@@ -66,15 +76,6 @@ class ModularFrame(QFrame):
         self._frame_menu_button.resize(28, 25)  # resize the button
         self._frame_menu_button.raise_()    # make sure the button always stays on top of the other widgets
         self._frame_menu_button.move(10, self.geometry().height() - 30)     # move the button to the proper position
-
-    def _callback_(self, callback_list, *args):
-        """
-        Fire an event with given arguments.
-        :param callback_list: Callback list
-        :param args: arguments
-        """
-        for callback in callback_list:
-            callback(*args)
 
     def _request_action_(self, q):
         """
@@ -97,15 +98,13 @@ class ModularFrame(QFrame):
         Sets the content of the frame to a specified control.
         :param name: argument
         """
-
         # stop listen for changes in the data context
-        if self.loaded_tool_frame is not None and 'data_context_changed' in self.loaded_tool_frame.__dict__:
-            if self._on_data_context_changed_ in self.loaded_tool_frame.data_context_changed:
-                self.loaded_tool_frame.data_context_changed.disconnect(self._on_data_context_changed_)
+        if self.loaded_tool_frame is not None and 'data_context_changed' in dir(self.loaded_tool_frame):
+            self.loaded_tool_frame.data_context_changed.disconnect(self._on_data_context_changed_)
 
-                # call destructor of the attached data context
-                if hasattr(self.loaded_tool_frame.data_context, '__del__'):
-                    self.loaded_tool_frame.data_context.__del__()
+            # call destructor of the attached data context
+            if hasattr(self.loaded_tool_frame.data_context, '__del__'):
+                self.loaded_tool_frame.data_context.__del__()
 
             # propagate event that a data context is no longer in use
             self._on_data_context_removed_(self.loaded_tool_frame.data_context)
@@ -121,17 +120,18 @@ class ModularFrame(QFrame):
         self._name = name
 
         # start listen for changes in the data context so that it can be relayed
-        if self.loaded_tool_frame is not None and 'data_context_changed' in self.loaded_tool_frame.__dict__:
+        if self.loaded_tool_frame is not None and 'data_context_changed' in dir(self.loaded_tool_frame):
             self.loaded_tool_frame.data_context_changed.connect(self._on_data_context_changed_)
 
             if self.loaded_tool_frame.data_context is not None:
-                self._on_data_context_changed_(self.loaded_tool_frame, self.loaded_tool_frame.data_context)
+                self._on_data_context_changed_(self.loaded_tool_frame.data_context)
 
     def _on_data_context_removed_(self, data_context):
-        self.data_context_removed.emit(data_context)
+        if data_context is not None:
+            self.data_context_removed.emit(data_context)
 
-    def _on_data_context_changed_(self, tool_frame, data_context):
-        self.received_data_context.emit(tool_frame, data_context)
+    def _on_data_context_changed_(self, data_context):
+        self.received_data_context.emit(data_context)
 
     def get_possible_frames(self):
         """
@@ -142,8 +142,10 @@ class ModularFrame(QFrame):
         self._view_menu.clear()
 
         # get classes
-        path = os.path.abspath(__file__).replace('ModularFrame.py', 'ToolFrames')   # get the path to the frames
-        frame_classes = ModuleManager.instance.load_classes_from_folder_derived_from(path, EmptyFrame)
+        frame_classes = get_builtin_frames()
+        if self.frame_search_path is not None:
+            additional = ModuleManager.instance.load_classes_from_folder_derived_from(self.frame_search_path, EmptyFrame)
+            frame_classes += additional
 
         for cls in frame_classes:
             name = cls.name
@@ -151,11 +153,14 @@ class ModularFrame(QFrame):
             already_present = True
             while already_present:  # make sure that there are no duplicate names
                 already_present = name in self._valid_frame_types
-                if already_present:
+                if already_present and name != 'empty frame':
                     name = '{} ({})'.format(cls.name, i)
                     i += 1
-            self._valid_frame_types[name] = cls
-            self._view_menu.addAction(name)
+                else:
+                    break
+            if not already_present:
+                self._valid_frame_types[name] = cls
+                self._view_menu.addAction(name)
         if '_name' in dir(self):
             self.name = self._name  # reload current frame
 

@@ -1,5 +1,5 @@
-from ViewModels import BaseViewModel
-from Framework import ObservableList, is_non_strict_type, Signal
+from QtModularUiPack.ViewModels import BaseViewModel
+from QtModularUiPack.Framework import ObservableList, is_non_strict_type, Signal
 
 
 class BaseContextAwareViewModel(BaseViewModel):
@@ -26,10 +26,8 @@ class BaseContextAwareViewModel(BaseViewModel):
         """
         if type(self._other_data_contexts) == ObservableList:   # check if old data context list is observable
             # de-register change events
-            if self._other_data_context_added_ in self._other_data_contexts.item_added:
-                self._other_data_contexts.item_added.disconnect(self._other_data_context_added_)
-            if self._other_data_context_removed_ in self._other_data_contexts.item_removed:
-                self._other_data_contexts.item_removed.disconnect(self._other_data_context_removed_)
+            self._other_data_contexts.item_added.disconnect(self._other_data_context_added_)
+            self._other_data_contexts.item_removed.disconnect(self._other_data_context_removed_)
 
         if type(value) == ObservableList:   # check if new data context list is observable
             # register change events
@@ -74,8 +72,6 @@ class BaseContextAwareViewModel(BaseViewModel):
             data_context_name += str(count)
         self.data_context_container.__dict__[data_context_name] = data_context
 
-        self.data_context_changed.emit(data_context)
-
     def _other_data_context_removed_(self, data_context):
         """
         Callback for handling the removal of a view model
@@ -88,8 +84,6 @@ class BaseContextAwareViewModel(BaseViewModel):
                 break
         if remove_key is not None:
             del self.data_context_container.__dict__[remove_key]
-
-        self.data_context_changed.emit(data_context)
 
 
 class DataContexts(object):

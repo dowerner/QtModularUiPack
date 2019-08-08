@@ -1,5 +1,5 @@
-from ViewModels import BaseViewModel, BaseContextAwareViewModel
-from Framework import ObservableList
+from QtModularUiPack.ViewModels import BaseViewModel, BaseContextAwareViewModel
+from QtModularUiPack.Framework import ObservableList
 
 
 class ModularApplicationViewModel(BaseViewModel):

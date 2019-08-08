@@ -3,7 +3,7 @@ import sys
 sys.path.append(path.split(__file__)[0])
 
 """from . import Framework
-from . import ViewModels
+from . import ToolFrameViewModels
 from . import ModularApplications
 from . import Widgets"""
 

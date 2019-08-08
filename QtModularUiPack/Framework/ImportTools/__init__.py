@@ -1,1 +1,1 @@
-from Framework.ImportTools import ModuleManager
+from QtModularUiPack.Framework.ImportTools.module_manager import ModuleManager

@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QFrame
-from Widgets.DataBinding.Bindings import BindingEnabledWidget
+from PyQt5.QtWidgets import QFrame, QMainWindow
+from PyQt5.QtCore import pyqtSignal
+from QtModularUiPack.Widgets.DataBinding.bindings import BindingEnabledWidget
 
 
 class EmptyFrame(QFrame, BindingEnabledWidget):
@@ -12,22 +13,32 @@ class EmptyFrame(QFrame, BindingEnabledWidget):
     def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
+    def closing(self):
+        pass
+
     @classmethod
-    def standalone_application(cls, title=None):
+    def standalone_application(cls, title=None, window_size=None, **kwargs):
         """
         Generates a standalone application from the widget.
         :param title: optional title for the application window. If no title is given the widget name will be taken
+        :param window_size: size of window
         """
         if title is None:
             title = cls.name
 
-        from PyQt5.QtWidgets import QMainWindow
         from PyQt5.Qt import QApplication
 
         app = QApplication([])
-        main = QMainWindow()
-        main.setCentralWidget(cls())
+        main = StandaloneWindow()
+        widget = cls(**kwargs)
+        main.setCentralWidget(widget)
         main.setWindowTitle(title)
+        main.on_closing.connect(widget.closing)
+
+        if window_size is not None:
+            width, height = window_size
+            main.resize(int(width), int(height))
+
         main.show()
         QApplication.instance().exec_()
 
@@ -51,3 +62,16 @@ class EmptyFrame(QFrame, BindingEnabledWidget):
             widget.setFixedHeight(height)
 
         return widget
+
+
+class StandaloneWindow(QMainWindow):
+
+    on_closing = pyqtSignal()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def closeEvent(self, *args, **kwargs):
+        self.on_closing.emit()
+        super().closeEvent(*args, **kwargs)
+

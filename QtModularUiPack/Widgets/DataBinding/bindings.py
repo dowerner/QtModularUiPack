@@ -220,7 +220,7 @@ class Binding(object):
         Removes listener from data context.
         IMPORTANT: Has to be called prior to binding removal.
         """
-        self._vm.property_changed.remove(self._on_change_)
+        self._vm.property_changed.disconnect(self._on_change_)
 
     def _setup_source_target_type_casting_(self):
         """
@@ -246,7 +246,7 @@ class Binding(object):
         self.operation = operation
         self.inv_op = inv_op
         self._vm = data_context
-        self._vm.property_changed.append(self._on_change_)
+        self._vm.property_changed.connect(self._on_change_)
         self.variable_name = variable_name
         self.widget = widget
         self.widget_attribute_setter = widget_attribute_setter

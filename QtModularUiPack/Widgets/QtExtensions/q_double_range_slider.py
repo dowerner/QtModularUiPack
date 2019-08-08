@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSizePolicy
-from Widgets.QtExtensions import QRangeSlider
+from QtModularUiPack.Widgets.QtExtensions import QRangeSlider
 
 
 CONTROL_OFFSET = 10

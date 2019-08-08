@@ -1,0 +1,5 @@
+from QtModularUiPack.ModularApplications.ToolsFrames.camera_frame import CameraFrame
+from QtModularUiPack.ModularApplications.ToolsFrames.experiment_frame import ExperimentFrame
+from QtModularUiPack.ModularApplications.ToolsFrames.hello_world_frame import HelloWorldFrame
+from QtModularUiPack.ModularApplications.ToolsFrames.tool_command_frame import ToolCommandFrame
+from QtModularUiPack.ModularApplications.ToolsFrames.video_analyzer_frame import VideoAnalyzerFrame

@@ -28,8 +28,9 @@ def is_non_strict_subclass(subtype, parent_type):
     if is_non_strict_type(subtype, parent_type):
         return True
 
-    base_classes = list(subtype.__bases__)
-    for base_class in base_classes:
-        if base_class.__name__ == parent_type.__name__:
-            return True
+    if hasattr(subtype, '__bases__'):
+        base_classes = list(subtype.__bases__)
+        for base_class in base_classes:
+            if base_class.__name__ == parent_type.__name__:
+                return True
     return False
