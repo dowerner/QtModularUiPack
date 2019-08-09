@@ -1,3 +1,19 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from QtModularUiPack.ViewModels import BaseContextAwareViewModel
 from QtModularUiPack.Framework import KillableThread, ModuleManager, ObservableList, is_non_strict_type, Signal
 from QtModularUiPack.Framework.Experiments import BaseExperiment
@@ -11,6 +27,9 @@ EXPERIMENT_CONFIG = 'experiment_config.json'
 
 
 class ExperimentOverviewViewModel(BaseContextAwareViewModel):
+    """
+    This is the data-context for the experiment frame. It stores the data-contexts of single experiment boxes.
+    """
 
     name = 'experiments'
 
@@ -18,27 +37,40 @@ class ExperimentOverviewViewModel(BaseContextAwareViewModel):
 
     @property
     def experiment_folder(self):
+        """
+        Gets the path of the folder where the python scripts containing experiments are
+        """
         return self._experiment_folder
 
     @experiment_folder.setter
     def experiment_folder(self, value):
+        """
+        Sets the path of the folder where the python scripts containing experiments are
+        :param value: path
+        """
         self._experiment_folder = value
-        self.experiments.clear()
-        self.add_experiment(True)
+        for experiment in self.experiments:
+            experiment.experiment_folder = value
 
     def __init__(self, experiment_folder=None):
         super().__init__()
-        self.experiments = ObservableList()
-        self.experiments.item_added.connect(self._experiment_added_)
-        self._experiment_folder = experiment_folder
-        self.data_context_changed.connect(self._data_contexts_changed_)
-        self.other_data_contexts.item_added.connect(self._data_contexts_changed_)
-        self.other_data_contexts.item_removed.connect(self._data_contexts_changed_)
+        self.experiments = ObservableList()     # list that contains the experiment data-contexts
+        self.experiments.item_added.connect(self._experiment_added_)    # listen for experiments which are added
+        self._experiment_folder = experiment_folder     # member for storing the experiment folder path
+        self.other_data_contexts.item_added.connect(self._data_contexts_changed_)   # listen for data contexts that appear in the application
+        self.other_data_contexts.item_removed.connect(self._data_contexts_changed_) # listen for data contexts that disappear from the application
 
     def add_experiment(self, cannot_be_removed=False):
+        """
+        Add experiment box
+        :param cannot_be_removed: If set to true no remove button will be added
+        """
         self.add_experiment_request.emit(cannot_be_removed)
 
     def save_configuration(self):
+        """
+        Save experiment configuration
+        """
         experiment_list = list()
         for experiment in self.experiments:
             experiment_data = {'experiment_name': experiment.experiment_name}
@@ -49,6 +81,9 @@ class ExperimentOverviewViewModel(BaseContextAwareViewModel):
             file.write(json.dumps(data))
 
     def load_configuration(self):
+        """
+        Load experiment configuration
+        """
         if os.path.isfile(EXPERIMENT_CONFIG):
             with open(EXPERIMENT_CONFIG, 'r') as file:
                 data = json.loads(file.read())
@@ -61,28 +96,45 @@ class ExperimentOverviewViewModel(BaseContextAwareViewModel):
                     if experiment_name in self.experiments[i].available_experiments:
                         index = self.experiments[i].available_experiments.index(experiment_name)
                         self.experiments[i].selected_experiment = index
-        if self.experiment_folder is None:
-            path = QFileDialog.getExistingDirectory(None, "Select folder containing experiment scripts");
-            if path != '':
-                self.experiment_folder = path
+
+    def change_experiment_folder(self):
+        """
+        Opens a dialog to select a new folder to look for experiment python scripts
+        :return:
+        """
+        path = QFileDialog.getExistingDirectory(None, "Select folder containing experiment scripts");
+        if path != '':
+            self.experiment_folder = path
 
     def _data_contexts_changed_(self, vm):
+        """
+        Callback for handling changes in the available other data contexts.
+        This method updates the experiments that they can access these contexts
+        :param vm: data context that caused the signal
+        """
         for experiment in self.experiments:
             experiment.other_data_contexts = self.other_data_contexts
 
     def _experiment_added_(self, experiment: BaseContextAwareViewModel):
-        experiment.other_data_contexts = self.other_data_contexts
+        """
+        Callback for handling an experiment being added
+        :param experiment: experiment which was added
+        """
+        experiment.other_data_contexts = self.other_data_contexts   # make other data contexts available to newly added experiment
 
 
 class ExperimentViewModel(QObject, BaseContextAwareViewModel):
     """
-    This view model provides the data context for the Experiment Frame
+    This view model provides the data context for the Experiment Boxes
     """
 
     name = 'experiment'
 
     @property
     def experiment_name(self):
+        """
+        Gets the name of this experiment
+        """
         if self._experiment is not None:
             return self._experiment.name
         else:
@@ -117,6 +169,8 @@ class ExperimentViewModel(QObject, BaseContextAwareViewModel):
         """
         Sets the experiment index
         """
+        if value < 0 or value >= len(self.experiments):
+            return
         self._selected_experiment = value
         self._experiment = self.experiments[value]
         self.notify_change('selected_experiment')
@@ -129,11 +183,29 @@ class ExperimentViewModel(QObject, BaseContextAwareViewModel):
         """
         return [experiment.name for experiment in self.experiments]
 
+    @property
+    def experiment_folder(self):
+        """
+        Gets the folder where scripts containing experiments are searched for
+        """
+        return self._experiment_folder
+
+    @experiment_folder.setter
+    def experiment_folder(self, value):
+        """
+        Sets the folder where scripts containing experiments are searched for
+        :param value: path
+        """
+        self._experiment_folder = value
+        self._look_for_experiments_()
+        self.notify_change('experiment_folder')
+        self.notify_change('available_experiments')
+
     def __init__(self, experiment_folder=None):
         super().__init__()
 
         # folder to look for experiments
-        self.experiment_folder = experiment_folder
+        self._experiment_folder = experiment_folder
 
         self._tool_frame_data_contexts = None
         self.widget = None
@@ -221,6 +293,7 @@ class ExperimentViewModel(QObject, BaseContextAwareViewModel):
         """
         if self.experiment_folder is None:
             return
+        self.experiments.clear()
         path = self.experiment_folder
         experiment_classes = ModuleManager.instance.load_classes_from_folder_derived_from(path, BaseExperiment)
 

@@ -1,3 +1,19 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtWidgets import QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QGridLayout, QScrollArea, QGroupBox, QLabel, QPushButton, QCheckBox
 from PyQt5.QtCore import Qt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
@@ -24,30 +40,75 @@ class PlotMasterWidget(QFrame):
         main_layout.addWidget(self._plot_config)
 
     def set_title(self, title):
+        """
+        Set plot title
+        :param title: plot title
+        """
         self._plot_config.set_title(title)
 
     def set_xlabel(self, value):
+        """
+        Set x-axis label of the plot
+        :param value: x-axis label
+        """
         self._plot_config.set_xlabel(value)
 
     def set_ylabel(self, value):
+        """
+        Set y-axis label of the plot
+        :param value: y-axis label
+        """
         self._plot_config.set_ylabel(value)
 
     def set_visibility(self, plot_item, visible):
+        """
+        Set visibility of the plot item
+        :param plot_item: plot item
+        :param visible: True for visible
+        """
         self._plot_config.set_visibility(plot_item, visible)
 
     def plot(self, *args, name=None, allow_remove=True, **kwargs):
+        """
+        Plot data
+        :param args: x and y data (as well as more matplotlib compatible arguments)
+        :param name: name of the plot
+        :param allow_remove: True or false
+        :param kwargs: keyword arguments
+        """
         return self._plot_config.plot(*args, name=name, allow_remove=allow_remove, **kwargs)
 
     def set_xrange(self, lower, upper):
+        """
+        Set x-axis range
+        :param lower: left boundary
+        :param upper: right boundary
+        """
         self._plot_config.set_xrange(lower, upper)
 
     def set_yrange(self, lower, upper):
+        """
+        Set y-axis range
+        :param lower: lower boundary
+        :param upper: upper boundary
+        """
         self._plot_config.set_yrange(lower, upper)
 
     def set_range(self, xl, xu, yl, yu):
+        """
+        Set plot range
+        :param xl: left boundary
+        :param xu: right boundary
+        :param yl: lower boundary
+        :param yu: upper boundary
+        """
         self._plot_config.set_range(xl, xu, yl, yu)
 
     def remove(self, plot_item):
+        """
+        Remove plot item
+        :param plot_item: plot item to remove
+        """
         self._plot_config.remove(plot_item)
 
 
@@ -91,8 +152,15 @@ class PlotWidget(QFrame):
 
 
 class PlotConfig(QFrame):
+    """
+    This widget provides a configuration panel for manipulating plot widgets
+    """
 
     def __init__(self, plot_widget: PlotWidget, *args, **kwargs):
+        """
+        Initialize plot config
+        :param plot_widget: plot widget to access
+        """
         super().__init__(*args, **kwargs)
         self._plot_widget = plot_widget
         self._ax = self._plot_widget.add_subplot(111)
@@ -104,43 +172,91 @@ class PlotConfig(QFrame):
         self._setup_()
 
     def set_title(self, title):
+        """
+        Set plot title
+        :param title: plot title
+        """
         self._ax.set_title(title)
         self._plot_widget.update()
 
     def set_xlabel(self, value):
+        """
+        Set x-axis label of the plot
+        :param value: x-axis label
+        """
         self._ax.set_xlabel(value)
         self._plot_widget.update()
 
     def set_ylabel(self, value):
+        """
+        Set y-axis label of the plot
+        :param value: y-axis label
+        """
         self._ax.set_ylabel(value)
         self._plot_widget.update()
 
     def set_xrange(self, lower, upper):
+        """
+        Set x-axis range
+        :param lower: left boundary
+        :param upper: right boundary
+        """
         self._ax.set_xlim(lower, upper)
         self._plot_widget.update()
 
     def set_yrange(self, lower, upper):
+        """
+        Set y-axis range
+        :param lower: lower boundary
+        :param upper: upper boundary
+        """
         self._ax.set_ylim(lower, upper)
         self._plot_widget.update()
 
     def set_range(self, xl, xu, yl, yu):
+        """
+        Set plot range
+        :param xl: left boundary
+        :param xu: right boundary
+        :param yl: lower boundary
+        :param yu: upper boundary
+        """
         self.set_xrange(xl, xu)
         self.set_yrange(yl, yu)
 
     def set_visibility(self, plot_item, visible):
+        """
+        Set visibility of the plot item
+        :param plot_item: plot item
+        :param visible: True for visible
+        """
         plot_item.line_object._visible = visible
         self._plot_widget.update()
 
     def remove(self, plot_item):
+        """
+        Remove plot item
+        :param plot_item: plot item to remove
+        """
         plot_item.line_object.remove()
         self.plot_items.remove(plot_item)
         self._fill_plot_list_()
         self._plot_widget.update()
 
     def update_legend(self):
+        """
+        Update legend according to plot items
+        """
         self._ax.legend([item.name for item in self.plot_items])
 
     def plot(self, *args, name=None, allow_remove=True, **kwargs):
+        """
+        Plot data
+        :param args: x and y data (as well as more matplotlib compatible arguments)
+        :param name: name of the plot
+        :param allow_remove: True or false
+        :param kwargs: keyword arguments
+        """
         if name is None:
             name = 'plot item {}'.format(len(self.plot_items))
 
@@ -152,9 +268,14 @@ class PlotConfig(QFrame):
         return plot_item
 
     def _fill_plot_list_(self):
+        """
+        Fill plot configuration list
+        """
+        # remove existing items
         for i in reversed(range(self.scroll_layout.count())):
             self.scroll_layout.itemAt(i).widget().setParent(None)
 
+        # fill list
         for item in self.plot_items:
             item_widget = EnableDisableWidget(item, self)
             self.scroll_layout.addWidget(item_widget)
@@ -173,6 +294,9 @@ class PlotConfig(QFrame):
 
 
 class PlotWidgetItem(object):
+    """
+    Data container for plot data
+    """
 
     def set_data(self, *args):
         self.line_object.set_data(*args)
@@ -188,21 +312,38 @@ class PlotWidgetItem(object):
 
 
 class EnableDisableWidget(QFrame):
+    """
+    Widget for controlling plot
+    """
 
     @property
     def name(self):
+        """
+        Gets name of the plot
+        """
         return self._plot_widget_item.name
 
     @name.setter
     def name(self, value):
+        """
+        Sets name of the plot
+        :param value: name
+        """
         self._plot_widget_item.name = value
 
     @property
     def enabled(self):
+        """
+        Gets if this plot is visible
+        """
         return self._enabled
 
     @enabled.setter
     def enabled(self, value):
+        """
+        Sets whether this plot is visible
+        :param value: True means visible
+        """
         self._enabled = value
         self._plot_control.set_visibility(self._plot_widget_item, self._enabled)
         self._enabled_box.setChecked(self._enabled)

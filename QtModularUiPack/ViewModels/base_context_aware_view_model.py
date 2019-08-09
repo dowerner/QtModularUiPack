@@ -1,3 +1,19 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from QtModularUiPack.ViewModels import BaseViewModel
 from QtModularUiPack.Framework import ObservableList, is_non_strict_type, Signal
 
@@ -10,7 +26,8 @@ class BaseContextAwareViewModel(BaseViewModel):
     Important: This only works if the control is embedded in the lab master main window which handles the dependency injection!
     """
 
-    data_context_changed = Signal(BaseViewModel)
+    other_data_context_was_added = Signal(BaseViewModel)
+    other_data_context_was_removed = Signal(BaseViewModel)
 
     @property
     def other_data_contexts(self):
@@ -71,6 +88,7 @@ class BaseContextAwareViewModel(BaseViewModel):
         if count > 1:
             data_context_name += str(count)
         self.data_context_container.__dict__[data_context_name] = data_context
+        self.other_data_context_was_added.emit(data_context)
 
     def _other_data_context_removed_(self, data_context):
         """
@@ -84,6 +102,7 @@ class BaseContextAwareViewModel(BaseViewModel):
                 break
         if remove_key is not None:
             del self.data_context_container.__dict__[remove_key]
+            self.other_data_context_was_removed.emit(data_context)
 
 
 class DataContexts(object):

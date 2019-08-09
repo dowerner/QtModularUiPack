@@ -1,5 +1,21 @@
-from Framework import Signal
-from ViewModels import BaseViewModel
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+from QtModularUiPack.Framework import Signal
+from QtModularUiPack.ViewModels import BaseViewModel
 
 
 class BindingEnabledWidget(object):
@@ -93,23 +109,33 @@ class BindingManager(object):
 
 
 def cast_float(text):
-    if '.' in text:
+    """
+    Cast text to float (robust for conversions while line edit is being manipulated)
+    :param text: Take text and try to cast it to float
+    :return: number
+    """
+    if '.' in text:  # check for dot in string
         parts = text.split('.')
-        if parts[1] == '':
-            return 0 if parts[0] == '' else float(parts[0])
+        if parts[1] == '':  # check if there is nothing written after the dot
+            return 0 if parts[0] == '' else float(parts[0])     # ignore part after dot
     if text == '':
         return 0
-    return float(text)
+    return float(text)  # normal conversion
 
 
 def cast_int(text):
-    if '.' in text:
-        return cast_float(text)
+    """
+    Cast text to float (permissive: also allows float conversion)
+    :param text: Take text and try to cast it int (float if dot is in string)
+    :return: number
+    """
+    if '.' in text:  # check for dot in string
+        return cast_float(text)     # cast to float if non-integer was intended
     else:
-        if text == '':
+        if text == '':  # return zero if string is empty
             return 0
         else:
-            return int(text)
+            return int(text)    # normal conversion
 
 
 class Binding(object):
@@ -137,48 +163,69 @@ class Binding(object):
             self._locked_during_update = False
 
     def _back_to_source_text_(self, text=None):
-        if not self._locked_during_update:
-            self._locked_during_update = True
+        """
+        Callback to handle the propagation of widget text back to the source
+        :param text: text which was changed
+        """
+        if not self._locked_during_update:  # check if updates are allowed
+            self._locked_during_update = True   # lock binding for this operation
             if text is not None:
-                if self.inv_op is not None:
-                    text = self.inv_op(text)
-                setattr(self._vm, self.variable_name, text)
-            else:
+                if self.inv_op is not None:     # check for inverse operation to be applied to the data before being passed to the source
+                    text = self.inv_op(text)    # apply inverse operation
+                setattr(self._vm, self.variable_name, text)     # set data in data context source
+            else:   # special case for text edit widgets
                 text = self.widget.toPlainText()
                 setattr(self._vm, self.variable_name, text)
-            self._locked_during_update = False
+            self._locked_during_update = False  # unlock binding
 
     def _back_to_source_check_(self, checked):
-        if not self._locked_during_update:
-            self._locked_during_update = True
-            if self.inv_op is not None:
-                    checked = self.inv_op(checked)
-            setattr(self._vm, self.variable_name, checked)
-            self._locked_during_update = False
+        """
+        Callback to handle the propagation of data from toggle widgets back to the source
+        :param checked: boolean value which was changed
+        """
+        if not self._locked_during_update:  # check if binding is locked
+            self._locked_during_update = True   # lock binding
+            if self.inv_op is not None:     # check if there is an inverse operation to be applied to the data before being passed to the source
+                    checked = self.inv_op(checked)  # apply inverse operation
+            setattr(self._vm, self.variable_name, checked)  # set data in data context source
+            self._locked_during_update = False  # unlock binding
 
     def _back_to_source_index_(self, index):
-        if not self._locked_during_update:
-            self._locked_during_update = True
-            if self.inv_op is not None:
-                    index = self.inv_op(index)
-            setattr(self._vm, self.variable_name, index)
-            self._locked_during_update = False
+        """
+        Callback to handle the propagation of data from index based widgets back to the source
+        :param index: index that was changed
+        """
+        if not self._locked_during_update:  # check if the binding is locked
+            self._locked_during_update = True   # lock the binding
+            if self.inv_op is not None:     # check if there is an inverse operation to be applied before passing the data to the source
+                    index = self.inv_op(index)  # apply the inverse operation
+            setattr(self._vm, self.variable_name, index)    # set the data in the source
+            self._locked_during_update = False  # unlock the binding
 
     def _back_to_source_value_(self, value):
-        if not self._locked_during_update:
-            self._locked_during_update = True
-            if self.inv_op is not None:
-                value = self.inv_op(value)
-            setattr(self._vm, self.variable_name, value)
-            self._locked_during_update = False
+        """
+        Callback to handle the propagation of numbers from widgets back to the source
+        :param value: number
+        """
+        if not self._locked_during_update:  # check if the binding is locked
+            self._locked_during_update = True   # lock the binding
+            if self.inv_op is not None:     # check if there is an inverse operation to be applied before passing the data to the source
+                value = self.inv_op(value)  # apply the inverse operation
+            setattr(self._vm, self.variable_name, value)    # set the data in the source
+            self._locked_during_update = False  # unlock the binding
 
     def _back_to_checked_value_(self, value):
-        if not self._locked_during_update:
-            self._locked_during_update = True
-            if self.inv_op is not None:
-                value = self.inv_op(value)
-            setattr(self._vm, self.variable_name, value)
-            self._locked_during_update = False
+        """
+        Callback to handle the propagation of data from checkbox widgets back to the source
+        :param value: boolean value
+        :return:
+        """
+        if not self._locked_during_update:  # check if the binding is locked
+            self._locked_during_update = True   # lock the binding
+            if self.inv_op is not None:     # check if there is an inverse operation to be applied to the data before passing it to the source
+                value = self.inv_op(value)  # apply the inverse operation
+            setattr(self._vm, self.variable_name, value)    # set the data in the source
+            self._locked_during_update = False  # unlock the binding
 
     def _register_widget_event_(self, widget, widget_attribute_setter):
         """
@@ -229,7 +276,7 @@ class Binding(object):
         value = getattr(self._vm, self.variable_name)
         if value is not None:
             if (type(value) == int or type(value) == float) and self.widget_attribute_setter == 'setText':
-                cast = lambda x: cast_int(x) if type(value) == int else lambda x: cast_float(x)
+                cast = cast_int if type(value) == int else cast_float
 
                 if self.inv_op is not None:
                     self.inv_op = lambda v: self.inv_op(cast(v))
@@ -246,11 +293,11 @@ class Binding(object):
         self.operation = operation
         self.inv_op = inv_op
         self._vm = data_context
-        self._vm.property_changed.connect(self._on_change_)
-        self.variable_name = variable_name
-        self.widget = widget
-        self.widget_attribute_setter = widget_attribute_setter
-        self._signal = None
-        self._register_widget_event_(widget, widget_attribute_setter)
-        self._setup_source_target_type_casting_()
-        self._on_change_(self.variable_name)
+        self._vm.property_changed.connect(self._on_change_)     # listen to changes in the source
+        self.variable_name = variable_name      # name to listen for in changes
+        self.widget = widget    # widget to apply the changes to
+        self.widget_attribute_setter = widget_attribute_setter  # setter method in widget
+        self._signal = None     # signal to listen for in widget to apply changes to the source (reverse-direction)
+        self._register_widget_event_(widget, widget_attribute_setter)   # check widget for valid signals
+        self._setup_source_target_type_casting_()   # use operation/inv_op to setup type-casting (This enables the usage of number based data in e.g. QLineEdit widgets)
+        self._on_change_(self.variable_name)    # apply the current data to the widget

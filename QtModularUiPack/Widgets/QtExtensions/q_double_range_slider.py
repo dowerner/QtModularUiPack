@@ -1,3 +1,19 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtCore import pyqtSignal, QSize
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QSizePolicy
 from QtModularUiPack.Widgets.QtExtensions import QRangeSlider
@@ -21,6 +37,8 @@ class QDoubleRangeSlider(QWidget):
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)  # make the widget use as much space as possible
         layout = QHBoxLayout()
         self.setLayout(layout)
+
+        # initialize it like the standard slider
         self._minimum = 0
         self._maximum = 100
         self._start = 0
@@ -28,24 +46,38 @@ class QDoubleRangeSlider(QWidget):
         self._increment = 1
         self._interval = 100
         self._steps = 100
+
+        # initialize the slider which is going to be wrapped
         self._slider = QRangeSlider(*args, **kwargs)
-        self._slider.setFixedSize(QSize(100, 30))
-        self._slider.startValueChanged.connect(self._slider_start_value_changed_)
-        self._slider.endValueChanged.connect(self._slider_end_value_changed_)
-        self._slider.setDrawValues(False)
+        self._slider.setFixedSize(QSize(100, 30))   # standard-size when initialized
+        self._slider.startValueChanged.connect(self._slider_start_value_changed_)   # listen to slider changes
+        self._slider.endValueChanged.connect(self._slider_end_value_changed_)       # listen to slider changes
+        self._slider.setDrawValues(False)   # don't draw values (They would be wrong because of the wrapping technique)
         layout.addWidget(self._slider)
-        self._handle_slider_()
+        self._handle_slider_()      # set slider values
 
     def setFixedSize(self, size):
-        super().setFixedSize(size)
-        n_size = QSize(size.width() - CONTROL_OFFSET, size.height())
-        self._slider.setFixedSize(n_size)
+        """
+        Set size of the slider
+        :param size: QSize
+        """
+        super().setFixedSize(size)  # set widget size
+        n_size = QSize(size.width() - CONTROL_OFFSET, size.height())    # size of the wrapped slider with offset
+        self._slider.setFixedSize(n_size)   # set size on the wrapped slider
 
     def setFixedWidth(self, p_int):
-        super().setFixedWidth(p_int - CONTROL_OFFSET)
-        self._slider.setFixedWidth(p_int)
+        """
+        Set width of the slider
+        :param p_int: width
+        """
+        super().setFixedWidth(p_int)
+        self._slider.setFixedWidth(p_int - CONTROL_OFFSET)  # set width with offset
 
     def setFixedHeight(self, p_int):
+        """
+        Set height of the slider
+        :param p_int: height
+        """
         super().setFixedHeight(p_int)
         self._slider.setFixedHeight(p_int)
 

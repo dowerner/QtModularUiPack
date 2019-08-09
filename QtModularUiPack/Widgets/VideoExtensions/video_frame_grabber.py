@@ -1,10 +1,29 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtMultimedia import QAbstractVideoSurface, QAbstractVideoBuffer, QVideoFrame, QVideoSurfaceFormat
 from PyQt5.QtCore import QSize, QRect, QPoint
-from PyQt5.QtGui import QImage, QPainter, QTransform
+from PyQt5.QtGui import QImage, QPainter
 from PyQt5.QtCore import Qt, pyqtSignal
 
 
 class VideoFrameGrabber(QAbstractVideoSurface):
+    """
+    This video surface can be used as a QMediaPlayer target but also allows access to the data
+    """
 
     frameAvailable = pyqtSignal(QImage)
 
@@ -24,10 +43,18 @@ class VideoFrameGrabber(QAbstractVideoSurface):
         return image_format, size
 
     def isFormatSupported(self, surface_format):
+        """
+        True if format is supported
+        :param surface_format: format
+        """
         image_format, size = self._format_size_(surface_format)
         return image_format != QImage.Format_Invalid and not size.isEmpty() and surface_format.handleType() == QAbstractVideoBuffer.NoHandle
 
     def start(self, surface_format):
+        """
+        Start capturing
+        :param surface_format: surface format
+        """
         image_format, size = self._format_size_(surface_format)
 
         if image_format != QImage.Format_Invalid and not size.isEmpty():
@@ -45,12 +72,19 @@ class VideoFrameGrabber(QAbstractVideoSurface):
             return False
 
     def stop(self):
+        """
+        Stop capturing
+        """
         self.currentFrame = QVideoFrame()
         self.targetRect = QRect()
         super().stop()
         self.widget.update()
 
     def present(self, frame: QVideoFrame):
+        """
+        Called by the video player
+        :param frame: frame to present
+        """
         if frame.isValid():
             clone_frame = QVideoFrame(frame)
             clone_frame.map(QAbstractVideoBuffer.ReadOnly)
@@ -70,6 +104,10 @@ class VideoFrameGrabber(QAbstractVideoSurface):
             return True
 
     def paint(self, painter: QPainter):
+        """
+        Paint frame
+        :param painter: painter to use
+        """
         if self.currentFrame.map(QAbstractVideoBuffer.ReadOnly):
             old_transform = painter.transform()
 
@@ -86,12 +124,19 @@ class VideoFrameGrabber(QAbstractVideoSurface):
             self.currentFrame.unmap()
 
     def update_video_rect(self):
+        """
+        Update dimensions
+        """
         size = self.surfaceFormat().sizeHint()
         size.scale(self.widget.size().boundedTo(size), Qt.KeepAspectRatio)
         self.targetRect = QRect(QPoint(0, 0), size)
         self.targetRect.moveCenter(self.widget.rect().center())
 
     def supportedPixelFormats(self, handle_type=None):
+        """
+        Get all supported formats
+        :param handle_type: handle_type
+        """
         return [QVideoFrame.Format_ARGB32,
                 QVideoFrame.Format_ARGB32_Premultiplied,
                 QVideoFrame.Format_RGB32,

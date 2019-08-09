@@ -1,3 +1,19 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtWidgets import QWidget, QSlider, QHBoxLayout
 from PyQt5.QtCore import QSize, pyqtSignal, Qt
 
@@ -16,6 +32,7 @@ class QDoubleSlider(QWidget):
         layout = QHBoxLayout()
         self.setLayout(layout)
 
+        # default setup
         self._maximum = 100
         self._minimum = 0
         self._increment = 1
@@ -23,11 +40,12 @@ class QDoubleSlider(QWidget):
         self._steps = 100
         self._value = 0
 
+        # add slider which will be wrapped
         self._slider = QSlider(Qt.Horizontal, *args, **kwargs)
-        self._slider.setFixedSize(QSize(180, 20))
-        self._slider.valueChanged.connect(self._slider_value_changed_)
+        self._slider.setFixedSize(QSize(180, 20))   # default size
+        self._slider.valueChanged.connect(self._slider_value_changed_)  # listen to value changes in the slider
         layout.addWidget(self._slider)
-        self._setup_slider_()
+        self._setup_slider_()   # setup
 
     def _slider_value_changed_(self, value):
         """

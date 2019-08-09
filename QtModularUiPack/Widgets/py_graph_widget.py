@@ -1,7 +1,24 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtWidgets import QFrame, QHBoxLayout, QMainWindow
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QColor
-from Framework.Plotting.color_utils import pyqtgraph_color_map_from_matplotlib
+from pyqtgraph import ColorMap
+from matplotlib.pyplot import get_cmap
 import pyqtgraph as pg
 import numpy as np
 
@@ -14,7 +31,7 @@ PY_GRAPH_PLOT_MODE_IMAGE = 'PLOT_MODE_IMAGE'
 
 class PyGraphWidget(QFrame):
     """
-    A very simple, one-plot plot widget based on PyQtGraph (faster for displaying large data sets that matplotlib)
+    A very simple, one-plot plot widget based on PyQtGraph (faster for displaying large amounts of data than matplotlib)
     """
 
     x_position_indicator_changed = pyqtSignal(float)
@@ -65,55 +82,97 @@ class PyGraphWidget(QFrame):
 
     @property
     def show_x_position_indicator(self):
+        """
+        Gets whether the x axis position indicator is shown
+        """
         return self._show_x_position_indicator
 
     @show_x_position_indicator.setter
     def show_x_position_indicator(self, value):
+        """
+        Sets whether the x axis position indicator is shown
+        :param value: True or false
+        """
         self._show_x_position_indicator = value
         self._set_x_position_indicator_()
 
     @property
     def x_indicator_movable(self):
+        """
+        Gets whether the x axis position indicator can be moved by mouse
+        """
         return self._x_indicator_movable
 
     @x_indicator_movable.setter
     def x_indicator_movable(self, value):
+        """
+        Sets whether the x axis position indicator can be moved by mouse
+        :param value: True or false
+        """
         self._x_indicator_movable = value
         self._set_x_position_indicator_()
 
     @property
     def x_indicator_color(self):
+        """
+        Gets the color of the x-position indicator
+        """
         return self._x_indicator_color
 
     @x_indicator_color.setter
     def x_indicator_color(self, value):
+        """
+        Sets the color of the x-position indicator
+        :param value: color
+        """
         self._x_indicator_color = value
         self._set_x_position_indicator_()
 
     @property
     def x_indicator_text_color(self):
+        """
+        Gets the text color of the x-position indicator
+        """
         return self._x_indicator_text_color
 
     @x_indicator_text_color.setter
     def x_indicator_text_color(self, value):
+        """
+        Sets the color of the x-position indicator
+        :param value: color
+        """
         self._x_indicator_text_color = value
         self._set_x_position_indicator_()
 
     @property
     def x_indicator_label(self):
+        """
+        Gets the text of the label on the x-position indicator
+        """
         return self._x_indicator_label
 
     @x_indicator_label.setter
     def x_indicator_label(self, value):
+        """
+        Sets the text of the label on the x-position indicator
+        :param value: text
+        """
         self._x_indicator_label = value
         self._set_x_position_indicator_()
 
     @property
     def x_indicator_position(self):
+        """
+        Gets the position of the x-position indicator
+        """
         return self._x_indicator_position
 
     @x_indicator_position.setter
     def x_indicator_position(self, value):
+        """
+        Sets the position of the x-position indicator
+        :param value: position
+        """
         self._x_indicator_position = value
         self._set_x_position_indicator_()
 
@@ -321,6 +380,9 @@ class PyGraphWidget(QFrame):
             self._plot.setDownsampling(auto=True)
 
     def _set_x_position_indicator_(self):
+        """
+        Apply all settings to x-position indicator
+        """
         if self._plot is None:
             return
 
@@ -509,3 +571,31 @@ if __name__ == '__main__':
         main.setCentralWidget(plot)
         main.show()
         QtGui.QApplication.instance().exec_()
+
+
+def color_map_to_pyqtgraph(map):
+    """
+    Converts a colormap from matplotlib to a colormap for pyqtgraph.
+    :param map: matplotlib colormap
+    :return: pyqtgraph colormap
+    """
+    length = len(map.colors)
+    pos = [i/length for i in range(length)]
+    color = map.colors
+    color_count = len(color[0])
+    color_mode = None
+    if color_count == 3:
+        color_mode = ColorMap.RGB
+        for entry in color:
+            entry.append(1.)
+    return ColorMap(pos, color, color_mode)
+
+
+def pyqtgraph_color_map_from_matplotlib(name, lut=None):
+    """
+    Creates a colormap for pyqtgraph using matplotlib's colormap capabilities.
+    :param name: map name
+    :param lut: lookup table
+    :return: pyqtgraph colormap
+    """
+    return color_map_to_pyqtgraph(get_cmap(name, lut))

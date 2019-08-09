@@ -1,15 +1,43 @@
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 from PyQt5.QtGui import QSyntaxHighlighter, QTextDocument, QTextCharFormat, QFont, QTextCursor
 from PyQt5.QtCore import Qt, QRegularExpression, pyqtSignal
 from PyQt5.QtWidgets import QTextEdit
 
 
 class HighlightingRule(object):
-        def __int__(self):
-            self.pattern = None
-            self.format = None
+    """
+    Rule for highlighting text
+    """
+
+    def __int__(self):
+        self.pattern = None
+        self.format = None
 
 
 def index_in_str(text, substring, starting=0):
+    """
+    Gets index of text in string
+    :arg text: text to search through
+    :arg substring: text to search for
+    :arg starting: offset
+    :return position
+    """
+
     search_in = text[starting:]
     if substring in search_in:
         return search_in.index(substring)
@@ -18,6 +46,9 @@ def index_in_str(text, substring, starting=0):
 
 
 class SyntaxHighlighter(QSyntaxHighlighter):
+    """
+    Syntax highlighter for python
+    """
 
     def __init__(self, parent: QTextDocument = None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -106,32 +137,56 @@ class SyntaxHighlighter(QSyntaxHighlighter):
 
 
 class CodeEditor(QTextEdit):
+    """
+    Code editor widget for python
+    """
     textChanged = pyqtSignal(str)
 
     @property
     def font_size(self):
+        """
+        Gets font size
+        """
         return self._font_size
 
     @font_size.setter
     def font_size(self, value):
+        """
+        Sets font size
+        :param value: size
+        """
         self._font_size = value
         self._update_()
 
     @property
     def tab_stop_width(self):
+        """
+        Gets tab width
+        """
         return self._tab_stop_width
 
     @tab_stop_width.setter
     def tab_stop_width(self, value):
+        """
+        Sets tab width
+        :param value: width
+        """
         self._tab_stop_width = value
         self._update_()
 
     @property
     def text(self):
+        """
+        Gets text
+        """
         return self.toPlainText()
 
     @text.setter
     def text(self, value):
+        """
+        Sets text
+        :param value: code
+        """
         self.setPlainText(value)
 
     def __init__(self, *args, **kwargs):

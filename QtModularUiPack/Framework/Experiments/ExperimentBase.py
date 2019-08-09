@@ -1,7 +1,22 @@
-from Framework import is_non_strict_type
+"""
+Copyright 2019 Dominik Werner
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+from QtModularUiPack.Framework import is_non_strict_type
 from PyQt5.QtCore import QMetaObject, Q_ARG
 from time import sleep
-import os
 import h5py
 
 
@@ -19,9 +34,12 @@ class BaseExperiment(object):
         self.calling_context = None
 
     def save_h5(self, path, data, dataset='data'):
-        if os.path.exists(path):
-            os.remove(path)
-
+        """
+        Save data as h5-binary file
+        :param path: path to file
+        :param data: data (numpy ndarray)
+        :param dataset: name of dataset in which to save the data
+        """
         hf = h5py.File(path, 'w')
         hf.create_dataset(dataset, data=data)
         hf.close()
