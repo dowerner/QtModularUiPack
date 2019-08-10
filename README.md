@@ -42,7 +42,7 @@ tools.hello_world.switch()
 ```
 Where "switch()" is a function provided by the data-context of the HelloWorldFrame-widget. Notice how the upper and lower text fields have swapped their contents.
 
-![hello_world_switch](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_hello_world_switch.png)
+![hello_world_switch](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_hello_world_switched.png)
 
 This simple example serves to illustrate how modular applications can greatly simplify the communication between independent parts of an application. Lab automation which is a common subject in experimental science, this can be utilized to control mandy different devices while keeping the code for each device completely seperate. The ModularApplication-widget handles adding and removal of other widgets dynamically and notifies so called "context-aware" widgets about changes.
 
