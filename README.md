@@ -18,11 +18,19 @@ ModularApplication.standalone_application(title='MyApp', window_size=(640, 480))
 ```
 This should produce a Qt user interface window with the title "MyApp" and the given size.
 
+![modular_application](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application.png)
+
 This empty window has a single button containing three dots. Clicking this button reveals a drop-down menu. Choose "View->Tool Command Line", this will change the window to a fully functional Python command prompt (ToolCommandFrame-widget).
+
+![console_test](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_console_test.png)
 
 The real power of the ModularApplication-widget lies in its ability to be subdivided and display different widgets simultaneously. To illustrate this again click the menu and then choose "split horizontally".
 
+![split](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_split.png)
+
 This will split the window and shows a new empty frame. In the new window choose "View->Hello World Frame". This will open the HelloWorldFrame-widget.
+
+![hello_world_widget](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_hello_world.png)
 
 Some of the widgets in this module have the ability to access and change data in other widgets. One example of this is the ToolCommandFrame-widget on the left side of the window. Type the following in the command part of the widget:
 ```python
@@ -33,6 +41,8 @@ This should show two items: console, hello_world. Both entries represent one fou
 tools.hello_world.switch()
 ```
 Where "switch()" is a function provided by the data-context of the HelloWorldFrame-widget. Notice how the upper and lower text fields have swapped their contents.
+
+![hello_world_switch](https://github.com/dowerner/QtModularUiPack/blob/master/doc/images/modular_application_hello_world_switch.png)
 
 This simple example serves to illustrate how modular applications can greatly simplify the communication between independent parts of an application. Lab automation which is a common subject in experimental science, this can be utilized to control mandy different devices while keeping the code for each device completely seperate. The ModularApplication-widget handles adding and removal of other widgets dynamically and notifies so called "context-aware" widgets about changes.
 
