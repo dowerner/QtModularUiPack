@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0671850c-4dec-43ac-8634-f2e277af6ad9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/code_environment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/killable_thread.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/observable_list.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/Framework/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/Framework/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
-    </list>
+    <list default="true" id="0671850c-4dec-43ac-8634-f2e277af6ad9" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,8 +31,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/setup.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+            <state relative-caret-position="340">
+              <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -139,14 +132,21 @@
       <option name="project" value="LOCAL" />
       <updated>1565362586803</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Committed missing data">
+      <created>1565591109324</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1565591109324</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <layout>
       <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.50104386" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Python Console" />
@@ -166,7 +166,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Completed alpha version" />
-    <option name="LAST_COMMIT_MESSAGE" value="Completed alpha version" />
+    <MESSAGE value="Committed missing data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Committed missing data" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/QtModularUiPack/Framework/Extensions/signal.py">
@@ -188,8 +189,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+        <state relative-caret-position="340">
+          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
         </state>
       </provider>
     </entry>
