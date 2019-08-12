@@ -1,1 +1,1 @@
-from QtModularUiPack.Framework.Experiments.ExperimentBase import BaseExperiment
+from QtModularUiPack.Framework.Experiments.experiment_base import BaseExperiment
