@@ -8,6 +8,8 @@ class CalculatorViewModel(BaseViewModel):
     and communicated with the model
     """
 
+    name = 'calculator'     # this will be the variable name of this data-context in context-aware data-contexts
+
     @property
     def display_content(self):
         """
