@@ -24,10 +24,8 @@ class BaseViewModel(object):
 
     name = 'data_context'
 
-    property_changed = Signal(str)
-
     def __init__(self):
-        pass
+        self.property_changed = Signal(str)
 
     def notify_change(self, name):
         """

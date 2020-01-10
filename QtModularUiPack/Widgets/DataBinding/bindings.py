@@ -23,9 +23,6 @@ class BindingEnabledWidget(object):
     This class is not a visual widget but enables a widget that inherits it along with a Qt widget to do data binding.
     """
 
-    data_context_changed = Signal(BaseViewModel)
-    data_context_removed = Signal(BaseViewModel)
-
     @property
     def data_context(self):
         """
@@ -50,6 +47,8 @@ class BindingEnabledWidget(object):
 
     def __init__(self):
         self._data_context = None
+        self.data_context_changed = Signal(BaseViewModel)
+        self.data_context_removed = Signal(BaseViewModel)
         self.bindings = BindingManager(None)
 
     def __del__(self):
