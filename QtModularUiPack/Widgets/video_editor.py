@@ -682,7 +682,7 @@ if __name__ == '__main__':
     app = QApplication([])
     main = QMainWindow()
     video_editor = VideoEditor()
-    video_editor.load('Z:/shared/Master Thesis/Experiments/TrappingExperiment/Trapping_18.7.2019/power_walk_1W-350mW_1Bar.avi')
+    #video_editor.load('Z:/shared/Master Thesis/Experiments/TrappingExperiment/Trapping_18.7.2019/power_walk_1W-350mW_1Bar.avi')
     main.setCentralWidget(video_editor)
     main.show()
     QApplication.instance().exec_()

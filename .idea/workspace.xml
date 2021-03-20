@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0671850c-4dec-43ac-8634-f2e277af6ad9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/QtModularUiPack.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/QtModularUiPack.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/.idea/QtModularUiPack.iml" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/.idea/QtModularUiPack.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/ViewModels/base_view_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/ViewModels/base_view_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QtModularUiPack/Widgets/DataBinding/bindings.py" beforeDir="false" afterPath="$PROJECT_DIR$/QtModularUiPack/Widgets/DataBinding/bindings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

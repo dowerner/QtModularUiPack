@@ -26,9 +26,6 @@ class BaseContextAwareViewModel(BaseViewModel):
     Important: This only works if the control is embedded in the lab master main window which handles the dependency injection!
     """
 
-    other_data_context_was_added = Signal(BaseViewModel)
-    other_data_context_was_removed = Signal(BaseViewModel)
-
     @property
     def other_data_contexts(self):
         """
@@ -58,6 +55,8 @@ class BaseContextAwareViewModel(BaseViewModel):
 
     def __init__(self):
         super().__init__()
+        self.other_data_context_was_added = Signal(BaseViewModel)
+        self.other_data_context_was_removed = Signal(BaseViewModel)
         self.data_context_container = DataContexts()
         self._other_data_contexts = None
         self.other_data_contexts = ObservableList()

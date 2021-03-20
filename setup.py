@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='QtModularUiPack',
-    version='0.0.5',
+    version='0.0.6',
     author='Dominik Werner',
     author_email='dominikw@bluewin.ch',
     description='A module for quick and easy creation of highly modular PyQt5 applications.',

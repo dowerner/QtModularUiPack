@@ -21,12 +21,12 @@ class ObservableList(list):
     """
     This list can send notifications about changes.
     """
-    item_added = Signal(object)
-    item_removed = Signal(object)
-    on_clear = Signal()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.item_added = Signal(object)
+        self.item_removed = Signal(object)
+        self.on_clear = Signal()
 
     def append(self, item):
         """
