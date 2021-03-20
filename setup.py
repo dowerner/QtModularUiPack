@@ -18,7 +18,8 @@ setuptools.setup(
         'PyQt5>=5.12',
         'numpy>=1.15.0',
         'matplotlib>=3.1.0',
-        'pyqtgraph>=0.10.0'
+        'pyqtgraph>=0.10.0',
+        'h5py>=3.2.1'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
